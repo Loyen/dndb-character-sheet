@@ -1,0 +1,309 @@
+<?php
+
+namespace loyen\DndbCharacterSheet\Importer\CustomYaml;
+
+use loyen\DndbCharacterSheet\Exception\CharacterInvalidImportException;
+use loyen\DndbCharacterSheet\Importer\ImporterInterface;
+use loyen\DndbCharacterSheet\Model\AbilityType;
+use loyen\DndbCharacterSheet\Model\ArmorType;
+use loyen\DndbCharacterSheet\Model\Character;
+use loyen\DndbCharacterSheet\Model\CharacterAbility;
+use loyen\DndbCharacterSheet\Model\CharacterArmorClass;
+use loyen\DndbCharacterSheet\Model\CharacterClass;
+use loyen\DndbCharacterSheet\Model\CharacterFeature;
+use loyen\DndbCharacterSheet\Model\CharacterHealth;
+use loyen\DndbCharacterSheet\Model\CharacterMovement;
+use loyen\DndbCharacterSheet\Model\CurrencyType;
+use loyen\DndbCharacterSheet\Model\Item;
+use loyen\DndbCharacterSheet\Model\MovementType;
+use loyen\DndbCharacterSheet\Model\SourceMaterial;
+
+class CustomYamlImporter implements ImporterInterface
+{
+    /** @var array<string, mixed> */
+    private readonly array $characterData;
+    private Character $character;
+
+    public static function import(string $inputString): Character
+    {
+        return (new self($inputString))->createCharacter();
+    }
+
+    public function __construct(string $inputString)
+    {
+        if (empty($inputString)) {
+            throw new CharacterInvalidImportException();
+        }
+
+        $this->characterData = \yaml_parse($inputString);
+    }
+
+    public function createCharacter(): Character
+    {
+        $this->character = new Character();
+        $this->character->setName($this->characterData['name']);
+        $this->character->setInventory($this->getInventory());
+        $this->character->setClasses($this->getClasses());
+        $this->character->setLevel($this->getLevel());
+        $this->character->setAbilityScores($this->getAbilityScores());
+        $this->character->setHealth($this->getHealth());
+        $this->character->setArmorClass($this->getArmorClass());
+        $this->character->setMovementSpeeds($this->getMovementSpeeds());
+        $this->character->setCurrencies($this->getCurrencies());
+        $this->character->setProficiencies([
+            'abilities' => [],
+            'armor' => [],
+            'languages' => [],
+            'tools' => [],
+            'weapons' => [],
+        ]);
+
+        return $this->character;
+    }
+
+    /** @return array<int, int> */
+    private function getAbilityScoresImprovements(): array
+    {
+        return \array_count_values(
+            \array_merge_recursive(
+                $this->characterData['race']['abilities'] ?? [],
+                \array_column($this->characterData['race']['features'], 'abilities'),
+                $this->characterData['background']['abilities'] ?? [],
+                \array_merge(...\array_column($this->characterData['classes'], 'abilities')),
+                \array_merge(...\array_column(
+                    \array_merge(...\array_column($this->characterData['classes'], 'features')),
+                    'abilities'
+                ))
+            )
+        );
+    }
+
+    /** @return array<string, CharacterAbility> */
+    private function getAbilityScores(): array
+    {
+        $abilityList = [];
+
+        $abilityTypes = \array_column(AbilityType::cases(), null, 'name');
+
+        $proficiencyList = $this->getProficiencies();
+        $abilityScoreImprovements = $this->getAbilityScoresImprovements();
+
+        foreach ($this->characterData['abilityScores'] as $type => $score) {
+            if (!isset($abilityTypes[$type])) {
+                throw new CharacterInvalidImportException('Ability score ' . $type . ' not found');
+            }
+
+            $ability = new CharacterAbility($abilityTypes[$type]);
+            $ability->setValue($score);
+
+            $ability->setSavingThrowProficient(
+                \in_array($type, $proficiencyList['savingThrows'])
+            );
+
+            if (isset($abilityScoreImprovements[$type])) {
+                $ability->setModifiers([$abilityScoreImprovements[$type]]);
+            }
+
+            $abilityList[$ability->getType()->name] = $ability;
+        }
+
+        return $abilityList;
+    }
+
+    private function getArmorClass(): CharacterArmorClass
+    {
+        $armorClass = new CharacterArmorClass();
+
+        foreach ($this->character->getInventory() as $item) {
+            $itemFullyEquipped = $item->isEquipped() && (!$item->canBeAttuned() || $item->isAttuned());
+
+            if (!$itemFullyEquipped) {
+                continue;
+            }
+
+            if ($item->getType() === 'armor') {
+                $armorClass->setArmor($item);
+            } elseif ($item->getType() === 'shield') {
+                $armorClass->setModifiers([$item->getArmorClass() ?? 0]);
+            }
+        }
+
+        if (empty($armorClass->getAbilityScores())) {
+            $armorClass->addAbilityScore(
+                $this->character->getAbilityScores()[AbilityType::DEX->name]
+            );
+        }
+
+        return $armorClass;
+    }
+
+    /** @return array<int, CharacterClass> */
+    private function getClasses(): array
+    {
+        $classList = [];
+
+        foreach ($this->characterData['classes'] as $classData) {
+            $class = new CharacterClass($classData['name']);
+
+            $sourceList = isset($classData['sources']) && \is_array($classData['sources'])
+                ? $this->createSourceList($classData['sources'])
+                : [];
+
+            $class->setLevel($classData['level']);
+
+            $featList = [];
+            foreach ($classData['features'] as $featData) {
+                $featList[] = new CharacterFeature(
+                    $featData['name'],
+                    $featData['description'] ?? '',
+                    $sourceList
+                );
+            }
+
+            $class->setFeatures($featList);
+
+            $classList[] = $class;
+        }
+
+        return $classList;
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    public function getCurrencies(): array
+    {
+        $currencies = $this->characterData['wallet'];
+
+        $currencyList = [];
+        foreach (CurrencyType::cases() as $currency) {
+            $currencyList[$currency->value] = $currencies[$currency->value] ?? 0;
+        }
+
+        return $currencyList;
+    }
+
+    private function getHealth(): CharacterHealth
+    {
+        $hitPoints = $this->characterData['classes'][0]['hitPoints']['baseValue'] ?? 0;
+        $hitPointsPerLevelAfterFirst = $this->characterData['classes'][0]['hitPoints']['levelingValue'];
+        $conModifier = $this->character->getAbilityScores()[AbilityType::CON->name]->getCalculatedModifier();
+
+        $hitPoints = $hitPoints + $conModifier;
+        $hitPoints += ($this->getLevel() - 1) * ($conModifier + $hitPointsPerLevelAfterFirst);
+
+        return new CharacterHealth($hitPoints);
+    }
+
+    /** @return array<int, Item> */
+    private function getInventory(): array
+    {
+        $itemList = [];
+
+        foreach ($this->characterData['inventory'] as $storage) {
+            foreach ($storage['items'] as $itemData) {
+                $item = new Item($itemData['name'], $itemData['type']);
+
+                $item->setQuantity($itemData['quantity'] ?? 1);
+
+                if (isset($itemData['damage'])) {
+                    $item->setDamage($itemData['damage']['value']);
+                    $item->setDamageType($itemData['damage']['type']);
+                }
+
+                if (
+                    isset(
+                        $itemData['armor'],
+                        $itemData['armor']['class'],
+                        $itemData['armor']['type']
+                    )
+                ) {
+                    $armorType = match ($itemData['armor']['type']) {
+                        'light' => ArmorType::LightArmor,
+                        'medium' => ArmorType::MediumArmor,
+                        'heavy' => ArmorType::HeavyArmor,
+                        'shield' => ArmorType::Shield,
+                        default => throw new CharacterInvalidImportException('Unknown armor type from item')
+                    };
+
+                    $item->setArmorClass($itemData['armor']['class']);
+                    $item->setArmorType($armorType);
+                }
+
+                $item->setIsEquipped($itemData['equipped'] ?? false);
+                $item->setIsMagical($itemData['magical'] ?? false);
+                $item->setIsConsumable($itemData['consumable'] ?? false);
+                $item->setIsAttuned($itemData['attuned'] ?? false);
+
+                $itemList[] = $item;
+            }
+        }
+
+        return $itemList;
+    }
+
+    private function getLevel(): int
+    {
+        return (int) \array_sum(\array_column($this->characterData['classes'], 'level'));
+    }
+
+    /**
+     * @return array<string, CharacterMovement>
+     */
+    public function getMovementSpeeds(): array
+    {
+        $movementSpeedList = [];
+        foreach (MovementType::cases() as $movementType) {
+            if (empty($this->characterData['race']['movement'][$movementType->value])) {
+                continue;
+            }
+
+            $movementSpeedList[$movementType->value] = new CharacterMovement(
+                $movementType,
+                $this->characterData['race']['movement'][$movementType->value]
+            );
+        }
+
+        return $movementSpeedList;
+    }
+
+    /** @return array<string, array<int, string>> */
+    private function getProficiencies(): array
+    {
+        static $proficiencyList = null;
+
+        return $proficiencyList ??= \array_merge_recursive(
+            $this->characterData['race']['proficiencies'],
+            \array_column($this->characterData['race']['features'], 'proficiencies'),
+            $this->characterData['background']['proficiencies'],
+            \array_merge(...\array_column($this->characterData['classes'], 'proficiencies')),
+            \array_merge(...\array_column(
+                \array_merge(...\array_column($this->characterData['classes'], 'features')),
+                'proficiencies'
+            ))
+        );
+    }
+
+    /**
+     * @param array<string, string> $sources
+     *
+     * @return array<int, SourceMaterial>
+     **/
+    private function createSourceList(array $sources): array
+    {
+        $sourceList = [];
+
+        foreach ($sources as $sourceData) {
+            if (!isset($sourceData['name'])) {
+                continue;
+            }
+
+            $sourceList[] = new SourceMaterial(
+                $sourceData['name'],
+                $sourceData['extra'] ?? null
+            );
+        }
+
+        return $sourceList;
+    }
+}
