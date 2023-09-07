@@ -1,0 +1,323 @@
+# yaml-language-server: $schema=../../../../schemas/CustomYamlSchema.json
+name: Litt Tyv
+
+abilityScores:
+  Strength: 12 # 12
+  Dexterity: 15 # 20
+  Constitution: 13 # 14
+  Intelligence: 8 # 9
+  Wisdom: 10 # 10
+  Charisma: 14 # 16
+
+race:
+  name: Gnome
+  subrace: Forest
+
+  sources:
+  - name: Players Handbook
+    extra: p37
+
+  size: Small
+  movement:
+    walk: 25
+
+  features:
+    - type: Ability Score Improvement
+      # 1 increases by 2, 1 increases by 1
+      abilities:
+        - Dexterity
+        - Dexterity
+        - Charisma
+    - name: Darkvision
+      description: >
+        A monster with darkvision can see in the dark within a specific radius.
+        The monster can see in dim light within the radius as if it were bright
+        light, and in darkness as if it were dim light. The monster can't discern
+        color in darkness, only shades of gray. Many creatures that live
+        underground have this special sense.
+    - name: Gnome cunning
+      description: >
+        You have advantage on all Intelligence, Wisdom, and Charisma saving
+        throws against magic.
+    - name: Natural Illusionist
+      description: >
+        You know the minor illusion cantrip. Intelligence is your spellcasting
+        ability for it.
+    - name: Speak with Small Beasts
+      description: >
+        Through sounds and gestures, you can communicate simple ideas with Small
+        or smaller beasts. Forest gnomes love animals and often keep squirrels,
+        badgers, rabbits, moles, woodpeckers, and other creatures as beloved
+        pets.
+
+background:
+  name: Criminal / Spy
+  description: >
+    You are an experienced criminal with a history of breaking the law. You
+    have spent a lot of time among other criminals and still have contacts
+    within the criminal underworld. You're far closer than most people to the
+    world of murder, theft, and violence that pervades the underbelly of
+    civilization, and you have survived up to this point by flouting the rules
+    and regulations of society.
+  features:
+    - name: Criminal Contact
+      description: >
+        You have a reliable and trustworthy contact who acts as your liaison to
+        a network of other criminals. You know how to get messages to and from
+        your contact, even over great distances; specifically, you know the
+        local messengers, corrupt caravan masters, and seedy sailors who can
+        deliver messages for you.
+    - type: Proficiency Improvement
+      category: Skills
+      proficiencies:
+        - Deception
+        - Stealth
+    - type: Proficiency Improvement
+      category: Tools
+      proficiencies:
+        - Jeweler's Tools
+        - Playing Card Set
+
+classes:
+  - name: Rogue
+    subclass: Thief
+    level: 13
+
+    sources:
+    - name: Players Handbook
+      extra: p94
+
+    hitPoints:
+      firstLevel: 8
+      higherLevel: 5
+
+    features:
+    - type: Proficiency Improvement # Class proficiencies
+      category: Armors
+      proficiencies:
+        - Light armor
+    - type: Proficiency Improvement # Class proficiencies
+      category: Saving Throws
+      proficiencies:
+        - Dexterity
+        - Intelligence
+    - type: Proficiency Improvement # Class proficiencies
+      category: Skills
+      proficiencies:
+        - Insight
+        - Perception
+        - Persuasion
+        - Sleight of Hand
+    - type: Proficiency Improvement # Class proficiencies
+      category: Tools
+      proficiencies:
+        - Thieves' tools
+    - type: Proficiency Improvement # Class proficiencies
+      category: Weapons
+      proficiencies:
+        - Hand crossbows
+        - Longswords
+        - Rapiers
+        - Shortswords
+        - Simple weapons
+    - type: Proficiency Improvement # Expertise
+      level: 6
+      category: Skills
+      proficiencies:
+        - Sleight of Hand
+    - type: Proficiency Improvement # Expertise
+      level: 6
+      category: Tools
+      proficiencies:
+        - Thieves' Tools
+    - name: Sneak Attack
+      level: 1
+      description: >
+        Beginning at 1st level, you know how to strike subtly and exploit a
+        foe's distraction. Once per turn, you can deal an extra 1d6 damage to
+        one creature you hit with an attack if you have advantage on the attack
+        roll. The attack must use a finesse or a ranged weapon.
+
+        You don't need advantage on the attack roll if another enemy of the
+        target is within 5 feet of it, that enemy isn't incapacitated, and you
+        don't have disadvantage on the attack roll.
+
+        The amount of the extra damage increases as you gain levels in this
+        class, as shown in the Sneak Attack column of the Rogue table.
+    - name: Thieves' Cant
+      type: Proficiency Improvement
+      level: 1
+      category: Languages
+      proficiencies:
+        - Thieves' Cant
+      description: >
+        During your rogue training you learned thieves' cant, a secret mix of
+        dialect, jargon, and code that allows you to hide messages in seemingly
+        normal conversation. Only another creature that knows thieves' cant
+        understands such messages. It takes four times longer to convey such a
+        message than it does to speak the same idea plainly.
+
+        In addition, you understand a set of secret signs and symbols used to
+        convey short, simple messages, such as whether an area is dangerous or
+        the territory of a thieves' guild, whether loot is nearby, or whether
+        the people in an area are easy marks or will provide a safe house for
+        thieves on the run.
+    - name: Cunning Action
+      level: 2
+      description: >
+        Starting at 2nd level, your quick thinking and agility allow you to
+        move and act quickly. You can take a bonus action on each of your turns
+        in combat. This action can be used only to take the Dash, Disengage, or
+        Hide action.
+    - name: Steady Aim
+      level: 3
+      description: >
+        As a bonus action, you give yourself advantage on your next attack roll
+        on the current turn. You can use this bonus action only if you haven't
+        moved during this turn, and after you use the bonus action, your speed
+        is 0 until the end of the current turn.
+    - name: Fast Hands
+      level: 3
+      description: >
+        Starting at 3rd level, you can use the bonus action granted by your
+        Cunning Action to make a Dexterity (Sleight of Hand) check, use your
+        thieves' tools to disarm a trap or open a lock, or take the Use an
+        Object action.
+    - name: Second-Story Work
+      level: 3
+      description: >
+        When you choose this archetype at 3rd level, you gain the ability to
+        climb faster than normal; climbing no longer costs you extra movement.
+
+        In addition, when you make a running jump, the distance you cover
+        increases by a number of feet equal to your Dexterity modifier.
+    - type: Ability Score Improvement
+      level: 4
+      abilities:
+        - Dexterity
+        - Constitution
+    - name: Mobile
+      type: Movement Improvement
+      level: 4 # Custom
+      movement:
+        walk: 10
+      description: >
+        You are exceptionally speedy and agile. You gain the following
+        benefits:
+
+        Your speed increases by 10 feet. When you use the Dash action,
+        difficult terrain doesn't cost you extra movement on that turn. When
+        you make a melee attack against a creature, you don't provoke
+        opportunity attacks from that creature for the rest of the turn,
+        whether you hit or not.
+    - name: Uncanny Dodge
+      level: 5
+      description: >
+        Starting at 5th level, when an attacker that you can see hits you with
+        an attack, you can use your reaction to halve the attack's damage
+        against you.
+    - type: Proficiency Improvement # Expertise
+      level: 6
+      category: Skills
+      proficiencies:
+        - Insight
+        - Perception
+    - name: Evasion
+      level: 7
+      description: >
+        Beginning at 7th level, you can nimbly dodge out of the way of certain
+        area effects, such as an ancient red dragon's fiery breath or an ice
+        storm spell. When you are subjected to an effect that allows you to
+        make a Dexterity saving throw to take only half damage, you instead
+        take no damage if you succeed on the saving throw, and only half damage
+        if you fail.
+    - type: Ability Score Improvement
+      level: 8
+      abilities:
+        - Charisma
+        - Dexterity
+        - Dexterity # Skill Expert Ability Score
+    - type: Proficiency Improvement
+      level: 8 # Custom
+      category: Skills
+      proficiencies:
+        - Acrobatics # Skill Expert
+        - Stealth # Skill Expert
+    - name: Supreme Sneak
+      level: 9
+      description: >
+        Starting at 9th level, you have advantage on a Dexterity (Stealth)
+        check if you move no more than half your speed on the same turn.
+    - type: Ability Score Improvement
+      level: 10
+      abilities:
+        # TODO: Add two ASIs on top of Fade away since we should have
+        # feat + ASI on every ASI
+        - Intelligence # Fade Away
+    - name: Fade Away
+      level: 10 # Custom
+      description: >
+        Your people are clever, with a knack for illusion magic. You have
+        learned a magical trick for fading away when you suffer harm. You gain
+        the following benefits:
+
+        Increase your Dexterity or Intelligence score by 1, to a maximum of 20.
+        Immediately after you take damage, you can use a reaction to magically
+        become invisible until the end of your next turn or until you attack,
+        deal damage, or force someone to make a saving throw. Once you use this
+        ability, you can't do so again until you finish a short or long rest.
+    - name: Reliable Talent
+      level: 11
+      description: >
+        By 11th level, you have refined your chosen skills until they approach
+        perfection. Whenever you make an ability check that lets you add your
+        proficiency bonus, you can treat a d20 roll of 9 or lower as a 10.
+    - type: Ability Score Improvement
+      level: 12
+      abilities:
+        - Wisdom
+        - Wisdom
+    - name: # TODO add feat
+      level: # Custom
+      description: >
+
+    - name: Use Magic Device
+      level: 13
+      description: >
+        By 13th level, you have learned enough about the workings of magic that
+        you can improvise the use of items even when they are not intended for
+        you. You ignore all class, race, and level requirements on the use of
+        magic items.
+
+spells:
+  - name: Minor Illusion
+    cast: At will
+    range: 30 ft (5ft square)
+    components: S, M (a bit of fleece)
+    duration: 1 minute
+    description: >
+      You create a sound or an image of an object within range that lasts for
+      the duration. The illusion also ends if you dismiss it as an action or
+      cast this spell again.
+
+      If you create a sound, its volume can range from a whisper to a scream.
+      It can be your voice, someone else's voice, a lion's roar, a beating of
+      drums, or any other sound you choose. The sound continues unabated
+      throughout the duration, or you can make discrete sounds at different
+      times before the spell ends.
+
+      If you create an image of an object--such as a chair, muddy footprints,
+      or a small chest--it must be no larger than a 5-foot cube. The image
+      can't create sound, light, smell, or any other sensory effect. Physical
+      interaction with the image reveals it to be an illusion, because things
+      can pass through it.
+
+      If a creature uses its action to examine the sound or image, the creature
+      can determine that it is an illusion with a successful Intelligence
+      (Investigation) check against your spell save DC. If a creature discerns
+      the illusion for what it is, the illusion becomes faint to the creature.
+
+wallet:
+  gold: 17084
+  silver: 8
+  copper: 98

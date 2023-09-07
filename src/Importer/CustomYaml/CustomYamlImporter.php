@@ -3,6 +3,11 @@
 namespace loyen\DndbCharacterSheet\Importer\CustomYaml;
 
 use loyen\DndbCharacterSheet\Exception\CharacterInvalidImportException;
+use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlCharacter;
+use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlFeature;
+use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlFeatureAbilityScoreImprovement;
+use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlFeatureMovementImprovement;
+use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlFeatureProficiencyImprovement;
 use loyen\DndbCharacterSheet\Importer\ImporterInterface;
 use loyen\DndbCharacterSheet\Model\AbilityType;
 use loyen\DndbCharacterSheet\Model\ArmorType;
@@ -20,8 +25,7 @@ use loyen\DndbCharacterSheet\Model\SourceMaterial;
 
 class CustomYamlImporter implements ImporterInterface
 {
-    /** @var array<string, mixed> */
-    private readonly array $characterData;
+    private readonly YamlCharacter $characterData;
     private Character $character;
 
     public static function import(string $inputString): Character
@@ -31,17 +35,14 @@ class CustomYamlImporter implements ImporterInterface
 
     public function __construct(string $inputString)
     {
-        if (empty($inputString)) {
-            throw new CharacterInvalidImportException();
-        }
-
-        $this->characterData = \yaml_parse($inputString);
+        $this->characterData = YamlCharacter::fromYaml($inputString)
+            ?? throw new CharacterInvalidImportException();
     }
 
     public function createCharacter(): Character
     {
         $this->character = new Character();
-        $this->character->setName($this->characterData['name']);
+        $this->character->setName($this->characterData->name);
         $this->character->setInventory($this->getInventory());
         $this->character->setClasses($this->getClasses());
         $this->character->setLevel($this->getLevel());
@@ -61,12 +62,54 @@ class CustomYamlImporter implements ImporterInterface
         return $this->character;
     }
 
+    /**
+     * @param array{
+     *  name?: string,
+     *  type?: string,
+     *  level?: int
+     *  description?: string
+     *  values?: mixed[]
+     * } $feat
+     */
+    public function createFeature(array $feat): YamlFeature
+    {
+        return match ($feat['type'] ?? 'default') {
+            CustomYamlImporterSelectors::AbilityScoreImprovements->value => new YamlFeatureAbilityScoreImprovement(
+                $feat['name'] ?? null,
+                $feat['type'] ?? 'default',
+                $feat['description'] ?? '',
+                $feat['level'] ?? 1,
+                $feat['values'],
+            ),
+            CustomYamlImporterSelectors::MovementImprovement->value => new YamlFeatureMovementImprovement(
+                $feat['name'] ?? null,
+                $feat['type'] ?? 'default',
+                $feat['description'] ?? '',
+                $feat['level'] ?? 1,
+                $feat['values'],
+            ),
+            CustomYamlImporterSelectors::ProficiencyImprovement->value => new YamlFeatureProficiencyImprovement(
+                $feat['name'] ?? null,
+                $feat['type'] ?? 'default',
+                $feat['description'] ?? '',
+                $feat['level'] ?? 1,
+                $feat['values'],
+            ),
+            default => new YamlFeature(
+                $feat['name'] ?? null,
+                $feat['type'] ?? 'default',
+                $feat['description'] ?? '',
+                $feat['level'] ?? 1
+            )
+        };
+    }
+
     /** @return array<int, int> */
-    private function getAbilityScoresImprovements(): array
+    private function getAbilityScoreImprovements(): array
     {
         return \array_count_values(
             \array_merge_recursive(
-                $this->characterData['race']['abilities'] ?? [],
+                $this->characterData['race']['features'] ?? [],
                 \array_column($this->characterData['race']['features'], 'abilities'),
                 $this->characterData['background']['abilities'] ?? [],
                 \array_merge(...\array_column($this->characterData['classes'], 'abilities')),
@@ -86,7 +129,7 @@ class CustomYamlImporter implements ImporterInterface
         $abilityTypes = \array_column(AbilityType::cases(), null, 'name');
 
         $proficiencyList = $this->getProficiencies();
-        $abilityScoreImprovements = $this->getAbilityScoresImprovements();
+        $abilityScoreImprovements = $this->getAbilityScoreImprovements();
 
         foreach ($this->characterData['abilityScores'] as $type => $score) {
             if (!isset($abilityTypes[$type])) {
@@ -168,6 +211,28 @@ class CustomYamlImporter implements ImporterInterface
         return $classList;
     }
 
+    /** @return array<int, CharacterFeature> */
+    public function getFeatureList(): array
+    {
+        $featureList = [];
+
+        $featureData = array_merge(
+            $this->characterData['race']['features'] ?? [],
+            $this->characterData['background']['features'] ?? [],
+            ...array_column($this->characterData['classes'], 'features')
+        );
+
+        $featureList = array_map(
+            fn ($feat) => $this->createFeature($feat),
+            $featureData
+        );
+
+        var_export($featureList);
+        exit;
+
+        return $featureList;
+    }
+
     /**
      * @return array<string, int>
      */
@@ -200,7 +265,7 @@ class CustomYamlImporter implements ImporterInterface
     {
         $itemList = [];
 
-        foreach ($this->characterData['inventory'] as $storage) {
+        foreach ($this->characterData->inventory as $storage) {
             foreach ($storage['items'] as $itemData) {
                 $item = new Item($itemData['name'], $itemData['type']);
 

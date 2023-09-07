@@ -4,6 +4,7 @@ namespace Tests\loyen\DndbCharacterSheet\Importer\CustomYaml;
 
 use loyen\DndbCharacterSheet\Exception\CharacterInvalidImportException;
 use loyen\DndbCharacterSheet\Importer\CustomYaml\CustomYamlImporter;
+use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlCharacter;
 use loyen\DndbCharacterSheet\Model\AbilityType;
 use loyen\DndbCharacterSheet\Model\Character;
 use loyen\DndbCharacterSheet\Model\CharacterAbility;
@@ -20,8 +21,9 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
-#[CoversClass(CustomYamlImporter::class)]
 #[CoversClass(Character::class)]
+#[CoversClass(CustomYamlImporter::class)]
+#[CoversClass(YamlCharacter::class)]
 #[UsesClass(AbilityType::class)]
 #[UsesClass(Character::class)]
 #[UsesClass(CharacterAbility::class)]
@@ -49,7 +51,7 @@ final class CustomYamlImporterTest extends TestCase
 
             $characterData['inputFilePath'] = $characterFileDir
                 . 'character_'
-                . \strtolower($characterData['name'])
+                . \strtolower(str_replace(' ', '_', $characterData['name']))
                 . '_input.yml';
 
             $characterName = $characterData['name'];
@@ -68,9 +70,6 @@ final class CustomYamlImporterTest extends TestCase
         $character = CustomYamlImporter::import(
             \file_get_contents($expectedCharacterData['inputFilePath'])
         );
-
-        $wow = null;
-        $this->assertSame(null, $wow);
 
         $this->assertInstanceOf(Character::class, $character);
         $this->assertSame($expectedCharacterData['name'], $character->getName());

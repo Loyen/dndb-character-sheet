@@ -1,21 +1,20 @@
 {
-    "name": "Raffles-5",
-    "level": 5,
-    "health": 38,
-    "armorClass": 14,
+    "name": "Litt Tyv",
+    "level": 13,
+    "health": 94,
+    "armorClass": 17,
     "movementSpeeds": {
-        "walk": 30,
-        "climb": 20
+        "walk": 35
     },
     "abilityScores": {
         "STR": {
-            "score": 8,
-            "modifier": -1,
+            "score": 12,
+            "modifier": 1,
             "savingThrowProficient": false
         },
         "DEX": {
-            "score": 16,
-            "modifier": 3,
+            "score": 20,
+            "modifier": 5,
             "savingThrowProficient": true
         },
         "CON": {
@@ -24,8 +23,8 @@
             "savingThrowProficient": false
         },
         "INT": {
-            "score": 10,
-            "modifier": 0,
+            "score": 9,
+            "modifier": -1,
             "savingThrowProficient": true
         },
         "WIS": {
@@ -34,15 +33,15 @@
             "savingThrowProficient": false
         },
         "CHA": {
-            "score": 14,
-            "modifier": 2,
+            "score": 16,
+            "modifier": 3,
             "savingThrowProficient": false
         }
     },
     "wallet": {
-        "cp": 0,
+        "cp": 98,
         "sp": 8,
-        "gp": 114,
+        "gp": 17084,
         "ep": 0,
         "pp": 0
     }
