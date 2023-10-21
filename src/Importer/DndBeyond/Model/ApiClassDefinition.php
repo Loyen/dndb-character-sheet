@@ -18,7 +18,7 @@ class ApiClassDefinition
         public readonly ?int $spellCastingAbilityId,
         /** @var array<int, ApiBookSource> */
         public readonly array $sources,
-        /** @var array<int, ApiClassFeature> */
+        /** @var array<int, ApiClassDefinitionFeature> */
         public readonly array $classFeatures,
         public readonly ?int $hitDice,
         public readonly ?ApiDice $wealthDice,
@@ -35,8 +35,7 @@ class ApiClassDefinition
         public readonly ?array $spellRules,
         /** @var array<int, object>|null */
         public readonly ?array $prerequisites
-    ) {
-    }
+    ) {}
 
     /**
      * @param array<string, mixed> $data
@@ -56,7 +55,7 @@ class ApiClassDefinition
             $data['moreDetailsUrl'],
             $data['spellCastingAbilityId'],
             ApiBookSource::createCollectionFromApi($data['sources']),
-            ApiClassFeature::createCollectionFromApi($data['classFeatures']),
+            ApiClassDefinitionFeature::createCollectionFromApi($data['classFeatures']),
             $data['hitDice'],
             $data['wealthDice'] !== null
                 ? ApiDice::fromApi($data['wealthDice'])
@@ -67,7 +66,7 @@ class ApiClassDefinition
             $data['spellContainerName'],
             $data['sourcePageNumber'],
             $data['subclassDefinition'] !== null
-                ? ApiClassDefinition::fromApi($data['subclassDefinition'])
+                ? self::fromApi($data['subclassDefinition'])
                 : null,
             $data['isHomebrew'],
             $data['primaryAbilities'],

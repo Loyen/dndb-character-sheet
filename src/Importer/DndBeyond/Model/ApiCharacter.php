@@ -40,13 +40,17 @@ class ApiCharacter
         public readonly ?int $bonusHitPoints,
         public readonly ?int $overrideHitPoints,
         public readonly ?int $removedHitPoints,
-        public readonly ?int $temporaryHitPoints
-    ) {
-    }
+        public readonly ?int $temporaryHitPoints,
+        /**
+         * Custom stuff.
+         */
+        /** @var array<int, ApiCustomProficiency> */
+        public readonly ?array $customProficiencies
+    ) {}
 
     public static function fromApi(string $json): ?self
     {
-        $data = \json_decode($json, true)['data'] ?? null;
+        $data = json_decode($json, true)['data'] ?? null;
 
         if ($data === null) {
             return null;
@@ -70,6 +74,7 @@ class ApiCharacter
             $data['overrideHitPoints'],
             $data['removedHitPoints'],
             $data['temporaryHitPoints'],
+            ApiCustomProficiency::createCollectionFromApi($data['customProficiencies'])
         );
     }
 }

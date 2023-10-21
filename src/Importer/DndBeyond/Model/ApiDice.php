@@ -5,13 +5,12 @@ namespace loyen\DndbCharacterSheet\Importer\DndBeyond\Model;
 class ApiDice
 {
     public function __construct(
-        public readonly int $diceCount,
-        public readonly int $diceValue,
+        public readonly ?int $diceCount,
+        public readonly ?int $diceValue,
         public readonly ?int $diceMultiplier,
         public readonly ?int $fixedValue,
-        public readonly string $diceString
-    ) {
-    }
+        public readonly ?string $diceString
+    ) {}
 
     /**
      * @param array<string, mixed> $data

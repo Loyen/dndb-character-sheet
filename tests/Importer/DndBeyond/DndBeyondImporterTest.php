@@ -9,18 +9,28 @@ use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiCharacter;
 use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiChoice;
 use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiClass;
 use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiClassDefinition;
+use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiClassDefinitionFeature;
 use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiClassFeature;
+use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiClassFeatureDefinition;
+use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiCustomProficiency;
 use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiDice;
 use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiFeat;
 use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiFeatDefinition;
 use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiInventoryItem;
 use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiInventoryItemDefinition;
+use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiLevelScale;
 use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiModifier;
 use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiOption;
 use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiOptionDefinition;
 use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiProperty;
 use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiRace;
 use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\ApiStat;
+use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\List\ApiCustomProficiencyType;
+use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\List\ApiMartialRangedWeaponEntityId;
+use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\List\ApiMartialWeaponEntityId;
+use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\List\ApiProficiencyGroupEntityTypeId;
+use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\List\ApiSimpleRangedWeaponEntityId;
+use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\List\ApiSimpleWeaponEntityId;
 use loyen\DndbCharacterSheet\Importer\DndBeyond\Model\Source;
 use loyen\DndbCharacterSheet\Model\AbilityType;
 use loyen\DndbCharacterSheet\Model\Character;
@@ -43,17 +53,27 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(ApiChoice::class)]
 #[CoversClass(ApiClass::class)]
 #[CoversClass(ApiClassDefinition::class)]
+#[CoversClass(ApiClassDefinitionFeature::class)]
 #[CoversClass(ApiClassFeature::class)]
+#[CoversClass(ApiClassFeatureDefinition::class)]
+#[CoversClass(ApiCustomProficiency::class)]
+#[CoversClass(ApiCustomProficiencyType::class)]
 #[CoversClass(ApiDice::class)]
 #[CoversClass(ApiFeat::class)]
 #[CoversClass(ApiFeatDefinition::class)]
 #[CoversClass(ApiInventoryItem::class)]
 #[CoversClass(ApiInventoryItemDefinition::class)]
+#[CoversClass(ApiLevelScale::class)]
+#[CoversClass(ApiMartialRangedWeaponEntityId::class)]
+#[CoversClass(ApiMartialWeaponEntityId::class)]
 #[CoversClass(ApiModifier::class)]
 #[CoversClass(ApiOption::class)]
 #[CoversClass(ApiOptionDefinition::class)]
+#[CoversClass(ApiProficiencyGroupEntityTypeId::class)]
 #[CoversClass(ApiProperty::class)]
 #[CoversClass(ApiRace::class)]
+#[CoversClass(ApiSimpleRangedWeaponEntityId::class)]
+#[CoversClass(ApiSimpleWeaponEntityId::class)]
 #[CoversClass(ApiStat::class)]
 #[CoversClass(DndBeyondImporter::class)]
 #[CoversClass(Source::class)]
@@ -79,9 +99,9 @@ final class DndBeyondImporterTest extends TestCase
 
         $characterFileDir = __DIR__ . '/Fixtures/';
 
-        foreach (\glob($characterFileDir . 'character_*_expected.json') ?: [] as $filePath) {
-            $characterData = \json_decode(
-                \file_get_contents($filePath) ?: '',
+        foreach (glob($characterFileDir . 'character_*_expected.json') ?: [] as $filePath) {
+            $characterData = json_decode(
+                file_get_contents($filePath) ?: '',
                 true
             );
 
@@ -107,7 +127,7 @@ final class DndBeyondImporterTest extends TestCase
     public function testImport(array $expectedCharacterData): void
     {
         $character = DndBeyondImporter::import(
-            \file_get_contents($expectedCharacterData['apiFilePath']) ?: ''
+            file_get_contents($expectedCharacterData['apiFilePath']) ?: ''
         );
 
         $this->assertInstanceOf(Character::class, $character);
@@ -220,8 +240,8 @@ final class DndBeyondImporterTest extends TestCase
     {
         $this->assertContainsOnlyInstancesOf(CharacterMovement::class, $actualMovementSpeeds);
         $this->assertSame(
-            \json_encode($expectedMovementSpeeds),
-            \json_encode($actualMovementSpeeds),
+            json_encode($expectedMovementSpeeds),
+            json_encode($actualMovementSpeeds),
             'Movement speeds'
         );
     }

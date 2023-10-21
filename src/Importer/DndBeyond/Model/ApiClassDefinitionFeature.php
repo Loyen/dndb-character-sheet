@@ -2,10 +2,15 @@
 
 namespace loyen\DndbCharacterSheet\Importer\DndBeyond\Model;
 
-class ApiClassFeature
+class ApiClassDefinitionFeature
 {
     public function __construct(
-        public readonly ApiClassFeatureDefinition $definition
+        public readonly int $id,
+        public readonly string $name,
+        public readonly mixed $prerequisite,
+        public readonly string $description,
+        public readonly int $requiredLevel,
+        public readonly int $displayOrder
     ) {}
 
     /**
@@ -14,7 +19,12 @@ class ApiClassFeature
     public static function fromApi(array $data): self
     {
         return new self(
-            ApiClassFeatureDefinition::fromApi($data['definition'])
+            $data['id'],
+            $data['name'],
+            $data['prerequisite'],
+            $data['description'],
+            $data['requiredLevel'],
+            $data['displayOrder']
         );
     }
 

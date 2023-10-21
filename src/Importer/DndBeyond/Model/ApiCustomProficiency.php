@@ -2,12 +2,18 @@
 
 namespace loyen\DndbCharacterSheet\Importer\DndBeyond\Model;
 
-class ApiStat
+class ApiCustomProficiency
 {
     public function __construct(
         public readonly int $id,
-        public readonly ?string $name,
-        public readonly int $value
+        public readonly string $name,
+        public readonly int $type,
+        public readonly ?int $statId,
+        public readonly int $proficiencyLevel,
+        public readonly ?string $notes,
+        public readonly mixed $override,
+        public readonly mixed $magicBonus,
+        public readonly mixed $miscBonus
     ) {}
 
     /**
@@ -18,7 +24,13 @@ class ApiStat
         return new self(
             $data['id'],
             $data['name'],
-            \is_int($data['value']) ? $data['value'] : 0
+            $data['type'],
+            $data['statId'],
+            $data['proficiencyLevel'],
+            $data['notes'],
+            $data['override'],
+            $data['magicBonus'],
+            $data['miscBonus']
         );
     }
 
