@@ -44,14 +44,14 @@ final class CustomYamlImporterTest extends TestCase
         $characterFileDir = __DIR__ . '/Fixtures/';
 
         foreach (glob($characterFileDir . 'character_*_expected.json') as $filePath) {
-            $characterData = \json_decode(
-                \file_get_contents($filePath),
+            $characterData = json_decode(
+                file_get_contents($filePath),
                 true
             );
 
             $characterData['inputFilePath'] = $characterFileDir
                 . 'character_'
-                . \strtolower(str_replace(' ', '_', $characterData['name']))
+                . strtolower(str_replace(' ', '_', $characterData['name']))
                 . '_input.yml';
 
             $characterName = $characterData['name'];
@@ -68,7 +68,7 @@ final class CustomYamlImporterTest extends TestCase
     public function testImport(array $expectedCharacterData)
     {
         $character = CustomYamlImporter::import(
-            \file_get_contents($expectedCharacterData['inputFilePath'])
+            file_get_contents($expectedCharacterData['inputFilePath'])
         );
 
         $this->assertInstanceOf(Character::class, $character);
@@ -170,8 +170,8 @@ final class CustomYamlImporterTest extends TestCase
     {
         $this->assertContainsOnlyInstancesOf(CharacterMovement::class, $actualMovementSpeeds);
         $this->assertSame(
-            \json_encode($expectedMovementSpeeds),
-            \json_encode($actualMovementSpeeds),
+            json_encode($expectedMovementSpeeds),
+            json_encode($actualMovementSpeeds),
             'Movement speeds'
         );
     }

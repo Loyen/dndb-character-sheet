@@ -2,6 +2,8 @@
 
 namespace loyen\DndbCharacterSheet\Importer\CustomYaml\Model;
 
+use loyen\DndbCharacterSheet\Model\SourceMaterial;
+
 class YamlFeatureMovementImprovement extends YamlFeature
 {
     public function __construct(
@@ -10,8 +12,7 @@ class YamlFeatureMovementImprovement extends YamlFeature
         public string $description = '',
         /** @var array<string, int> */
         public array $movement = [],
-        /** @var YamlSource[] */
+        /** @var SourceMaterial[] */
         public array $sources = []
-    ) {
-    }
+    ) {}
 }
