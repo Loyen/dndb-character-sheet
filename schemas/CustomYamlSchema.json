@@ -59,6 +59,22 @@
           "type": "string",
           "description": "Description of the character background"
         },
+        "traits": {
+          "type": "string",
+          "description": "Character traits"
+        },
+        "bonds": {
+          "type": "string",
+          "description": "Character bond"
+        },
+        "ideals": {
+          "type": "string",
+          "description": "Characters ideals"
+        },
+        "flaws": {
+          "type": "string",
+          "description": "Character flaws"
+        },
         "features": { "$ref": "#/definitions/feature-list" }
       },
       "required": ["name"]
