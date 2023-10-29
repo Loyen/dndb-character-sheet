@@ -161,25 +161,11 @@
             "additionalProperties": false,
             "items": {
               "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "Name of storage item"
-                },
-                "type": {
-                  "type": "string",
-                  "description": "Type of storage item"
-                },
-                "quantity": {
-                  "type": "integer",
-                  "description": "Amount of this item exists in this storage"
-                },
-                "equipped": {
-                  "type": "boolean",
-                  "description": "Is item equipped or not"
-                }
-              }
+              "anyOf": [
+                { "$ref": "#/definitions/item-generic" },
+                { "$ref": "#/definitions/item-armor" },
+                { "$ref": "#/definitions/item-damage" }
+              ]
             },
             "required": ["name", "type"]
           }
@@ -299,6 +285,98 @@
       "type": "array",
       "description": "List of features",
       "items": { "$ref": "#/definitions/feature" }
+    },
+    "item": {
+      "type": "object",
+      "anyOf": [
+        { "$ref": "#/definitions/item-generic" }
+      ]
+    },
+    "item-generic": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of item"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of item"
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of item"
+        },
+        "quantity": {
+          "type": "integer",
+          "description": "Amount of this item exists in this storage"
+        },
+        "equipped": {
+          "type": "boolean",
+          "description": "Is item equipped or not"
+        },
+        "sources": { "$ref": "#/definitions/source-list" }
+      },
+      "required": ["name"]
+    },
+    "item-armor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/definitions/item-generic/properties/name" },
+        "description":  { "$ref": "#/definitions/item-generic/properties/description" },
+        "type":  { "$ref": "#/definitions/item-generic/properties/type" },
+        "quantity":  { "$ref": "#/definitions/item-generic/properties/quantity" },
+        "equipped":  { "$ref": "#/definitions/item-generic/properties/equipped" },
+        "armor": {
+          "type": "object",
+          "description": "Armor properties of item",
+          "additionalProperties": false,
+          "properties": {
+            "class": {
+              "type": "integer",
+              "description": "Armor class of item"
+            },
+            "type": {
+              "type": "string",
+              "description": "Item armor type"
+            }
+          },
+          "required": ["class", "type"]
+        },
+        "sources": { "$ref": "#/definitions/source-list" }
+      },
+      "required": ["name", "type", "armor"]
+    },
+    "item-damage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/definitions/item-generic/properties/name" },
+        "description":  { "$ref": "#/definitions/item-generic/properties/description" },
+        "type":  { "$ref": "#/definitions/item-generic/properties/type" },
+        "quantity":  { "$ref": "#/definitions/item-generic/properties/quantity" },
+        "equipped":  { "$ref": "#/definitions/item-generic/properties/equipped" },
+        "damage": {
+          "type": "object",
+          "description": "Damage properties of item",
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "type": "string",
+              "description": "Damage it performs"
+            },
+            "type": {
+              "type": "string",
+              "description": "Type of damage it does"
+            }
+          },
+          "required": ["value", "type"]
+        },
+        "sources": { "$ref": "#/definitions/source-list" }
+      },
+      "required": ["name", "type", "damage"]
     },
     "movement": {
       "type": "object",
