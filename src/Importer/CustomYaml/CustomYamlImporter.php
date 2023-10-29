@@ -201,7 +201,6 @@ class CustomYamlImporter implements ImporterInterface
 
             $featList = [];
             foreach ($yamlClass->features as $featData) {
-                echo json_encode($featData) . \PHP_EOL;
                 $featList[] = new CharacterFeature(
                     $featData->name,
                     $featData->description ?? '',
