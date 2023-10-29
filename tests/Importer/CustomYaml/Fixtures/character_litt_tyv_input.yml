@@ -277,9 +277,9 @@ classes:
       abilities:
         - Wisdom
         - Wisdom
-    - name: # TODO add feat
-      level: # Custom
-      description: >
+#    - name:
+#      level: 12
+#      description: >
 
     - name: Use Magic Device
       level: 13
@@ -317,7 +317,12 @@ spells:
       (Investigation) check against your spell save DC. If a creature discerns
       the illusion for what it is, the illusion becomes faint to the creature.
 
-wallet:
-  gold: 17084
-  silver: 8
-  copper: 98
+inventory:
+  - name: Wallet
+    items:
+      - name: Gold
+        quantity: 17084
+      - name: Silver
+        quantity: 8
+      - name: Copper
+        quantity: 98

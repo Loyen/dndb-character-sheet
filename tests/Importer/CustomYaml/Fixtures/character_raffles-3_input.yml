@@ -2,12 +2,40 @@
 name: Raffles-3
 
 abilityScores:
-  STR: 8
-  DEX: 15
-  CON: 13
-  INT: 10
-  WIS: 12
-  CHA: 14
+  Strength: 8
+  Dexterity: 15
+  Constitution: 13
+  Intelligence: 10
+  Wisdom: 12
+  Charisma: 14
+
+background:
+  name: Thief for hire
+
+  traits: >
+    A gentleman thief.
+    Confidence can get me anywhere.
+  bonds: >
+    I bring justice to the world.
+  ideals: >
+    I only steal what the person I steal from can afford.
+  flaws: >
+    Greed gets the best of me.
+
+  features:
+    - type: Proficiency Improvement
+      category: Languages
+      proficiencies:
+        - Goblin
+    - type: Proficiency Improvement
+      category: Skills
+      proficiencies:
+        - Persuasion
+        - Investigation
+    - type: Proficiency Improvement
+      category: Tools
+      proficiencies:
+        - Disguise kit
 
 race:
   name: Catfolk
@@ -34,36 +62,45 @@ race:
         until the end of the turn. Once you use this trait, you can't use
         it again until you move 0 feet on one of your turns.
 
-  proficiencies:
-    skills:
-      - Perception
-      - Stealth
+    - type: Proficiency Improvement
+      category: Skills
+      proficiencies:
+        - Perception
+        - Stealth
 
 classes:
   - name: Rogue
+    subClass: Swashbuckler
+    level: 3
+
     sources:
       - name: Players Handbook
         extra: p94
-    subClass:
-      name: Swashbuckler
-      sources:
-        - name: Xanthars Guide to Everything
-          extra: p47
-    level: 3
+      - name: Xanthars Guide to Everything
+        extra: p47
 
     hitPoints:
+      firstLevel: 8
+      higherLevel: 5
       description: >
         Hit Dice: 1d8 per rogue level
         Hit Points at 1st Level: 8 + your Constitution modifier
         Hit Points at Higher Levels: 1d8 (or 5) + your Constitution
         modifier per rogue level after 1st
-      baseValue: 8
-      levelingValue: 5
 
     features:
+      - type: Proficiency Improvement
+        category: Armors
+        proficiencies:
+          - Light armor
+      - type: Proficiency Improvement
+        category: Saving Throws
+        proficiencies:
+          - Dexterity
+          - Intelligence
       # Level 1
       - name: Expertise
-        type: skill-proficiency
+        type: Proficiency Improvement
         description: >
           At 1st level, choose two of your skill proficiencies, or one of
           your skill proficiencies and your proficiency with thieves'
@@ -72,10 +109,10 @@ classes:
 
           At 6th level, you can choose two more of your proficiencies
           (in skills or with thieves' tools) to gain this benefit.
+        category: Skills
         proficiencies:
-          skills:
-            - Athletics
-            - Stealth
+          - Athletics
+          - Stealth
       - name: Sneak Attack
         description: >
           Beginning at 1st level, you know how to strike subtly and
@@ -93,9 +130,10 @@ classes:
           this class, as shown in the Sneak Attack column of the Rogue
           table.
       - name: Thieves's Cant
+        type: Proficiency Improvement
+        category: Languages
         proficiencies:
-          languages:
-            - Thieves's Cant
+          - Thieves's Cant
         description: >
           During your rogue training you learned thieves' cant, a secret
           mix of dialect, jargon, and code that allows you to hide
@@ -147,29 +185,8 @@ classes:
         - Rapiers
         - Shortswords
 
-background:
-  name: Thief for hire
-  proficiencies:
-    languages:
-      - Goblin
-    skills:
-      - Persuasion
-      - Investigation
-    tools:
-      - Disguise kit
-
-  traits:
-    - A gentleman thief
-    - Confidence can get me anywhere
-  bonds:
-    - I bring justice to the world
-  ideals:
-    - I only steal what the person I steal from can afford
-  flaws:
-    - Greed gets the best of me
-
 inventory:
-  - name: backpack
+  - name: Backpack
     items:
       - name: Leather armor
         type: armor
@@ -199,6 +216,9 @@ inventory:
       - name: Burglar pack (3 uses)
         type: gear
 
-wallet:
-  gp: 114
-  sp: 8
+  - name: Wallet
+    items:
+      - name: Gold
+        quantity: 114
+      - name: Silver
+        quantity: 8
