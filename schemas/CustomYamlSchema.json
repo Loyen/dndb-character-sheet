@@ -128,31 +128,47 @@
       },
       "required": ["name", "level", "hitPoints"]
     },
-    "wallet": {
-      "type": "object",
-      "description": "Character wallet",
+    "inventory": {
+      "type": "array",
+      "description": "List of storage items",
       "additionalProperties": false,
-      "properties": {
-        "platinum": {
-          "type": "integer",
-          "description": "Amount of platinum"
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of storage item"
+          },
+          "items": {
+            "type": "array",
+            "description": "List of items",
+            "additionalProperties": false,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of storage item"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Type of storage item"
+                },
+                "quantity": {
+                  "type": "integer",
+                  "description": "Amount of this item exists in this storage"
+                },
+                "equipped": {
+                  "type": "boolean",
+                  "description": "Is item equipped or not"
+                }
+              }
+            },
+            "required": ["name", "type"]
+          }
         },
-        "gold": {
-          "type": "integer",
-          "description": "Amount of gold"
-        },
-        "electrum": {
-          "type": "integer",
-          "description": "Amount of electrum"
-        },
-        "silver": {
-          "type": "integer",
-          "description": "Amount of silver"
-        },
-        "copper": {
-          "type": "integer",
-          "description": "Amount of copper"
-        }
+        "required": ["name"]
       }
     }
   },
