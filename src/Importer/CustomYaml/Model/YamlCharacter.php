@@ -6,9 +6,11 @@ class YamlCharacter
 {
     public function __construct(
         public readonly string $name,
-        public readonly mixed $abilityScores,
-        public readonly mixed $race,
-        public readonly mixed $classes,
+        /** @var array<string, int> */
+        public readonly array $abilityScores,
+        public readonly YamlRace $race,
+        /** @var YamlClass[] */
+        public readonly array $classes,
         public readonly mixed $background,
         public readonly mixed $inventory,
         public readonly mixed $wallet
@@ -25,11 +27,13 @@ class YamlCharacter
         return new self(
             $data['name'],
             $data['abilityScores'],
-            $data['race'],
-            $data['classes'],
+            YamlRace::fromData($data['race']),
+            isset($data['classes'])
+                ? YamlClass::createCollectionFromData($data['classes'])
+                : [],
             $data['background'],
-            $data['inventory'],
-            $data['wallet']
+            $data['inventory'] ?? [],
+            $data['wallet'] ?? []
         );
     }
 }

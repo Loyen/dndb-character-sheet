@@ -9,6 +9,7 @@ use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlFeatureAbilityScoreIm
 use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlFeatureMovementImprovement;
 use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlFeatureProficiencyImprovement;
 use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlProficiencyCategory;
+use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlSource;
 use loyen\DndbCharacterSheet\Importer\ImporterException;
 use loyen\DndbCharacterSheet\Importer\ImporterInterface;
 use loyen\DndbCharacterSheet\Model\AbilityType;
@@ -189,20 +190,21 @@ class CustomYamlImporter implements ImporterInterface
     {
         $classList = [];
 
-        foreach ($this->characterData->classes as $classData) {
-            $class = new CharacterClass($classData['name']);
+        foreach ($this->characterData->classes as $yamlClass) {
+            $class = new CharacterClass($yamlClass->name);
 
-            $sourceList = isset($classData['sources']) && \is_array($classData['sources'])
-                ? $this->createSourceList($classData['sources'])
+            $sourceList = $yamlClass->sources !== null
+                ? $this->createSourceList($yamlClass->sources)
                 : [];
 
-            $class->setLevel($classData['level']);
+            $class->setLevel($yamlClass->level);
 
             $featList = [];
-            foreach ($classData['features'] as $featData) {
+            foreach ($yamlClass->features as $featData) {
+                echo json_encode($featData) . \PHP_EOL;
                 $featList[] = new CharacterFeature(
-                    $featData['name'],
-                    $featData['description'] ?? '',
+                    $featData->name,
+                    $featData->description ?? '',
                     $sourceList
                 );
             }
@@ -221,8 +223,8 @@ class CustomYamlImporter implements ImporterInterface
         $featureList = [];
 
         $featureData = array_merge(
-            $this->characterData->race['features'] ?? [],
-            $this->characterData->background['features'] ?? [],
+            $this->characterData->race->features,
+            $this->characterData->background->features,
             ...array_column($this->characterData->classes, 'features')
         );
 
@@ -339,8 +341,7 @@ class CustomYamlImporter implements ImporterInterface
         static $proficiencyList = null;
 
         return $proficiencyList ??= array_merge_recursive(
-            $this->characterData->race['proficiencies'],
-            array_column($this->characterData->race['features'], 'proficiencies'),
+            array_column($this->characterData->race->features, 'proficiencies'),
             $this->characterData->background['proficiencies'],
             array_merge(...array_column($this->characterData->classes, 'proficiencies')),
             array_merge(...array_column(
@@ -351,7 +352,7 @@ class CustomYamlImporter implements ImporterInterface
     }
 
     /**
-     * @param array<string, string> $sources
+     * @param YamlSource[] $sources
      *
      * @return array<int, SourceMaterial>
      **/
@@ -360,13 +361,13 @@ class CustomYamlImporter implements ImporterInterface
         $sourceList = [];
 
         foreach ($sources as $sourceData) {
-            if (!isset($sourceData['name'])) {
+            if ($sourceData->name === null) {
                 continue;
             }
 
             $sourceList[] = new SourceMaterial(
-                $sourceData['name'],
-                $sourceData['extra'] ?? null
+                $sourceData->name,
+                $sourceData->extra ?? null
             );
         }
 

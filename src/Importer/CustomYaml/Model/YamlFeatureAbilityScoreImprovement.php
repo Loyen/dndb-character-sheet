@@ -15,4 +15,17 @@ class YamlFeatureAbilityScoreImprovement extends YamlFeature
         /** @var SourceMaterial[] */
         public array $sources = []
     ) {}
+
+    public static function fromData(array $data): self
+    {
+        return new self(
+            $data['name'] ?? YamlFeatureType::AbilityScoreImprovements->value,
+            $data['level'] ?? 0,
+            $data['description'] ?? '',
+            $data['abilities'],
+            isset($data['sources'])
+                    ? YamlSource::createCollectionFromData($data['sources'])
+                    : [],
+        );
+    }
 }
