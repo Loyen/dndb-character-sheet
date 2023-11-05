@@ -2,12 +2,12 @@
 name: Litt Tyv
 
 abilityScores:
-  Strength: 12 # 12
-  Dexterity: 15 # 20
-  Constitution: 13 # 14
-  Intelligence: 8 # 9
-  Wisdom: 10 # 10
-  Charisma: 14 # 16
+  STR: 12 # 12
+  DEX: 15 # 20
+  CON: 13 # 14
+  INT: 8 # 8
+  WIS: 10 # 12
+  CHA: 14 # 18
 
 race:
   name: Gnome
@@ -25,9 +25,9 @@ race:
     - type: Ability Score Improvement
       # 1 increases by 2, 1 increases by 1
       abilities:
-        - Dexterity
-        - Dexterity
-        - Charisma
+        - DEX
+        - DEX
+        - CHA
     - name: Darkvision
       description: >
         A monster with darkvision can see in the dark within a specific radius.
@@ -37,11 +37,11 @@ race:
         underground have this special sense.
     - name: Gnome cunning
       description: >
-        You have advantage on all Intelligence, Wisdom, and Charisma saving
+        You have advantage on all INT, WIS, and CHA saving
         throws against magic.
     - name: Natural Illusionist
       description: >
-        You know the minor illusion cantrip. Intelligence is your spellcasting
+        You know the minor illusion cantrip. INT is your spellcasting
         ability for it.
     - name: Speak with Small Beasts
       description: >
@@ -81,7 +81,7 @@ background:
 classes:
   - name: Rogue
     subclass: Thief
-    level: 13
+    level: 15
 
     sources:
     - name: Players Handbook
@@ -99,8 +99,8 @@ classes:
     - type: Proficiency Improvement # Class proficiencies
       category: Saving Throws
       proficiencies:
-        - Dexterity
-        - Intelligence
+        - DEX
+        - INT
     - type: Proficiency Improvement # Class proficiencies
       category: Skills
       proficiencies:
@@ -180,7 +180,7 @@ classes:
       level: 3
       description: >
         Starting at 3rd level, you can use the bonus action granted by your
-        Cunning Action to make a Dexterity (Sleight of Hand) check, use your
+        Cunning Action to make a DEX (Sleight of Hand) check, use your
         thieves' tools to disarm a trap or open a lock, or take the Use an
         Object action.
     - name: Second-Story Work
@@ -190,12 +190,12 @@ classes:
         climb faster than normal; climbing no longer costs you extra movement.
 
         In addition, when you make a running jump, the distance you cover
-        increases by a number of feet equal to your Dexterity modifier.
+        increases by a number of feet equal to your DEX modifier.
     - type: Ability Score Improvement
       level: 4
       abilities:
-        - Dexterity
-        - Constitution
+        - DEX
+        - CON
     - name: Mobile
       type: Movement Improvement
       level: 4 # Custom
@@ -228,15 +228,15 @@ classes:
         Beginning at 7th level, you can nimbly dodge out of the way of certain
         area effects, such as an ancient red dragon's fiery breath or an ice
         storm spell. When you are subjected to an effect that allows you to
-        make a Dexterity saving throw to take only half damage, you instead
+        make a DEX saving throw to take only half damage, you instead
         take no damage if you succeed on the saving throw, and only half damage
         if you fail.
     - type: Ability Score Improvement
       level: 8
       abilities:
-        - Charisma
-        - Dexterity
-        - Dexterity # Skill Expert Ability Score
+        - CHA
+        - DEX
+        - DEX # Skill Expert Ability Score
     - type: Proficiency Improvement
       level: 8 # Custom
       category: Skills
@@ -246,14 +246,16 @@ classes:
     - name: Supreme Sneak
       level: 9
       description: >
-        Starting at 9th level, you have advantage on a Dexterity (Stealth)
+        Starting at 9th level, you have advantage on a DEX (Stealth)
         check if you move no more than half your speed on the same turn.
     - type: Ability Score Improvement
       level: 10
       abilities:
         # TODO: Add two ASIs on top of Fade away since we should have
         # feat + ASI on every ASI
-        - Intelligence # Fade Away
+        - INT # Fade Away
+        - CHA
+        - CHA
     - name: Fade Away
       level: 10 # Custom
       description: >
@@ -261,7 +263,7 @@ classes:
         learned a magical trick for fading away when you suffer harm. You gain
         the following benefits:
 
-        Increase your Dexterity or Intelligence score by 1, to a maximum of 20.
+        Increase your DEX or INT score by 1, to a maximum of 20.
         Immediately after you take damage, you can use a reaction to magically
         become invisible until the end of your next turn or until you attack,
         deal damage, or force someone to make a saving throw. Once you use this
@@ -275,12 +277,20 @@ classes:
     - type: Ability Score Improvement
       level: 12
       abilities:
-        - Wisdom
-        - Wisdom
-#    - name:
-#      level: 12
-#      description: >
-
+        - WIS
+        - WIS
+    - name: Skulker
+      level: 12 # Custom
+      description: >
+        You are expert at slinking through shadows. You gain the following
+        benefits:
+          * You can try to hide when you are lightly obscured from the creature
+            from which you are hiding.
+          * When you are hidden from a creature and
+            miss it with a ranged weapon attack, making the attack doesn't
+            reveal your position.
+          * Dim light doesn't impose disadvantage on your Wisdom
+            (Perception) checks relying on sight.
     - name: Use Magic Device
       level: 13
       description: >
@@ -288,6 +298,20 @@ classes:
         you can improvise the use of items even when they are not intended for
         you. You ignore all class, race, and level requirements on the use of
         magic items.
+    - name: Blindsense
+      level: 14
+      description: >
+        Starting at 14th level, if you are able to hear, you are aware of the
+        location of any hidden or invisible creature within 10 feet of you.
+    - name: Slippery Mind
+      type: Proficiency Improvement
+      level: 15
+      category: Saving Throws
+      proficiencies:
+        - WIS
+      description: >
+        By 15th level, you have acquired greater mental strength. You gain
+        proficiency in Wisdom saving throws.
 
 spells:
   - name: Minor Illusion
@@ -313,7 +337,7 @@ spells:
       can pass through it.
 
       If a creature uses its action to examine the sound or image, the creature
-      can determine that it is an illusion with a successful Intelligence
+      can determine that it is an illusion with a successful INT
       (Investigation) check against your spell save DC. If a creature discerns
       the illusion for what it is, the illusion becomes faint to the creature.
 

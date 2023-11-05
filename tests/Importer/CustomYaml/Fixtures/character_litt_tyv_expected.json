@@ -1,7 +1,7 @@
 {
     "name": "Litt Tyv",
-    "level": 13,
-    "health": 94,
+    "level": 15,
+    "health": 108,
     "armorClass": 17,
     "movementSpeeds": {
         "walk": 35
@@ -30,11 +30,11 @@
         "WIS": {
             "score": 12,
             "modifier": 1,
-            "savingThrowProficient": false
+            "savingThrowProficient": true
         },
         "CHA": {
-            "score": 16,
-            "modifier": 3,
+            "score": 18,
+            "modifier": 4,
             "savingThrowProficient": false
         }
     },

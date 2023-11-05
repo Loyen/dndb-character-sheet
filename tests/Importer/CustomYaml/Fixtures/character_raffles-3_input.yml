@@ -2,12 +2,12 @@
 name: Raffles-3
 
 abilityScores:
-  Strength: 8
-  Dexterity: 15
-  Constitution: 13
-  Intelligence: 10
-  Wisdom: 12
-  Charisma: 14
+  STR: 8
+  DEX: 15
+  CON: 13
+  INT: 10
+  WIS: 12
+  CHA: 14
 
 background:
   name: Thief for hire
@@ -84,8 +84,8 @@ classes:
       higherLevel: 5
       description: >
         Hit Dice: 1d8 per rogue level
-        Hit Points at 1st Level: 8 + your Constitution modifier
-        Hit Points at Higher Levels: 1d8 (or 5) + your Constitution
+        Hit Points at 1st Level: 8 + your CON modifier
+        Hit Points at Higher Levels: 1d8 (or 5) + your CON
         modifier per rogue level after 1st
 
     features:
@@ -96,8 +96,8 @@ classes:
       - type: Proficiency Improvement
         category: Saving Throws
         proficiencies:
-          - Dexterity
-          - Intelligence
+          - DEX
+          - INT
       # Level 1
       - name: Expertise
         type: Proficiency Improvement
@@ -156,7 +156,7 @@ classes:
       - name: Rakish Audacity
         description: >
           You can give yourself a bonus to your initiative rolls equal to
-          your Charisma modifier.
+          your CHA modifier.
 
           You also gain an additional way to use your Sneak Attack; you
           don't need advantage on the attack roll to use your Sneak Attack
