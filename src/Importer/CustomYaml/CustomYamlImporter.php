@@ -5,13 +5,8 @@ namespace loyen\DndbCharacterSheet\Importer\CustomYaml;
 use loyen\DndbCharacterSheet\Exception\CharacterInvalidImportException;
 use loyen\DndbCharacterSheet\Importer\CustomYaml\Exception\CharacterYamlDataException;
 use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlCharacter;
-use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlFeature;
-use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlFeatureAbilityScoreImprovement;
-use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlFeatureMovementImprovement;
-use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlFeatureProficiencyImprovement;
 use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlProficiencyCategory;
 use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlSource;
-use loyen\DndbCharacterSheet\Importer\ImporterException;
 use loyen\DndbCharacterSheet\Importer\ImporterInterface;
 use loyen\DndbCharacterSheet\Model\AbilityType;
 use loyen\DndbCharacterSheet\Model\ArmorType;
@@ -65,50 +60,6 @@ class CustomYamlImporter implements ImporterInterface
         ]);
 
         return $this->character;
-    }
-
-    /**
-     * @param array{
-     *  name?: string,
-     *  type?: string,
-     *  level?: int,
-     *  description?: string,
-     *  category?: string,
-     *  values?: mixed[]
-     * } $feat
-     */
-    public function createFeature(array $feat): YamlFeature
-    {
-        return match ($feat['type'] ?? 'default') {
-            CustomYamlImporterSelectors::AbilityScoreImprovements->value => new YamlFeatureAbilityScoreImprovement(
-                $feat['name'] ?? null,
-                $feat['level'] ?? 1,
-                $feat['description'] ?? '',
-                $feat['values'] ?? [],
-            ),
-            CustomYamlImporterSelectors::MovementImprovement->value => new YamlFeatureMovementImprovement(
-                $feat['name'] ?? null,
-                $feat['level'] ?? 1,
-                $feat['description'] ?? '',
-                $feat['values'] ?? [],
-            ),
-            CustomYamlImporterSelectors::ProficiencyImprovement->value => new YamlFeatureProficiencyImprovement(
-                $feat['name'] ?? null,
-                $feat['level'] ?? 1,
-                $feat['description'] ?? '',
-                isset($feat['category'])
-                    ? (
-                        YamlProficiencyCategory::tryFrom($feat['category'])
-                        ?? throw new ImporterException('Unknown proficiency category given')
-                    ) : throw new ImporterException('No proficiency category given'),
-                $feat['values'] ?? [],
-            ),
-            default => new YamlFeature(
-                $feat['name'] ?? null,
-                $feat['level'] ?? 1,
-                $feat['description'] ?? '',
-            )
-        };
     }
 
     /** @return array<string, int> */
@@ -217,20 +168,11 @@ class CustomYamlImporter implements ImporterInterface
     /** @return array<int, CharacterFeature> */
     public function getFeatureList(): array
     {
-        $featureList = [];
-
-        $featureData = array_merge(
+        return array_merge(
             $this->characterData->race->features,
             $this->characterData->background->features,
             ...array_column($this->characterData->classes, 'features')
         );
-
-        $featureList = array_map(
-            fn ($feat) => $this->createFeature($feat),
-            $featureData
-        );
-
-        return $featureList;
     }
 
     /**
