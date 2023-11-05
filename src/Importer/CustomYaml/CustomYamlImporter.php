@@ -3,6 +3,7 @@
 namespace loyen\DndbCharacterSheet\Importer\CustomYaml;
 
 use loyen\DndbCharacterSheet\Exception\CharacterInvalidImportException;
+use loyen\DndbCharacterSheet\Importer\CustomYaml\Exception\CharacterYamlDataException;
 use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlCharacter;
 use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlFeature;
 use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlFeatureAbilityScoreImprovement;
@@ -54,6 +55,7 @@ class CustomYamlImporter implements ImporterInterface
         $this->character->setArmorClass($this->getArmorClass());
         $this->character->setMovementSpeeds($this->getMovementSpeeds());
         $this->character->setCurrencies($this->getCurrencies());
+        $this->character->setProficiencyBonus($this->getProficiencyBonus());
         $this->character->setProficiencies([
             'abilities' => [],
             'armor' => [],
@@ -344,6 +346,20 @@ class CustomYamlImporter implements ImporterInterface
             'proficiencies',
             'category'
         ) + array_fill_keys(array_keys(array_column(YamlProficiencyCategory::cases(), null, 'value')), []);
+    }
+
+    public function getProficiencyBonus(): int
+    {
+        $level = $this->character->getLevel();
+
+        return match (true) {
+            $level <= 4 => 2,
+            $level <= 8 => 3,
+            $level <= 12 => 4,
+            $level <= 16 => 5,
+            $level <= 20 => 6,
+            default => throw new CharacterYamlDataException('Level out of scope')
+        };
     }
 
     /**
