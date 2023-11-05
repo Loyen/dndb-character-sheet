@@ -109,21 +109,17 @@ class CustomYamlImporter implements ImporterInterface
         };
     }
 
-    /** @return array<int, int> */
+    /** @return array<string, int> */
     private function getAbilityScoreImprovements(): array
     {
-        return array_count_values(
-            array_merge_recursive(
-                $this->characterData->race['features'] ?? [],
-                array_column($this->characterData->race['features'], 'abilities'),
-                $this->characterData->background['abilities'] ?? [],
-                array_merge(...array_column($this->characterData->classes, 'abilities')),
-                array_merge(...array_column(
-                    array_merge(...array_column($this->characterData->classes, 'features')),
-                    'abilities'
-                ))
-            )
-        );
+        return array_count_values(array_merge(...array_column(
+            [
+                ...$this->characterData->race->features,
+                ...$this->characterData->background['features'],
+                ...array_column($this->characterData->classes, 'features')[0],
+            ],
+            'abilities'
+        )));
     }
 
     /** @return array<string, CharacterAbility> */
@@ -145,7 +141,7 @@ class CustomYamlImporter implements ImporterInterface
             $ability->setValue($score);
 
             $ability->setSavingThrowProficient(
-                \in_array($type, $proficiencyList['savingThrows'])
+                \in_array($type, $proficiencyList[YamlProficiencyCategory::SavingThrows->value])
             );
 
             if (isset($abilityScoreImprovements[$type])) {
@@ -252,8 +248,8 @@ class CustomYamlImporter implements ImporterInterface
 
     private function getHealth(): CharacterHealth
     {
-        $hitPoints = $this->characterData->classes[0]['hitPoints']['baseValue'] ?? 0;
-        $hitPointsPerLevelAfterFirst = $this->characterData->classes[0]['hitPoints']['levelingValue'];
+        $hitPoints = $this->characterData->classes[0]->hitPoints['firstLevel'] ?? 0;
+        $hitPointsPerLevelAfterFirst = $this->characterData->classes[0]->hitPoints['higherLevel'];
         $conModifier = $this->character->getAbilityScores()[AbilityType::CON->name]->getCalculatedModifier();
 
         $hitPoints += $conModifier;
@@ -269,7 +265,7 @@ class CustomYamlImporter implements ImporterInterface
 
         foreach ($this->characterData->inventory as $storage) {
             foreach ($storage['items'] as $itemData) {
-                $item = new Item($itemData['name'], $itemData['type']);
+                $item = new Item($itemData['name'], $itemData['type'] ?? null);
 
                 $item->setQuantity($itemData['quantity'] ?? 1);
 
@@ -321,13 +317,13 @@ class CustomYamlImporter implements ImporterInterface
     {
         $movementSpeedList = [];
         foreach (MovementType::cases() as $movementType) {
-            if (empty($this->characterData->race['movement'][$movementType->value])) {
+            if (empty($this->characterData->race->movement->{$movementType->value})) {
                 continue;
             }
 
             $movementSpeedList[$movementType->value] = new CharacterMovement(
                 $movementType,
-                $this->characterData->race['movement'][$movementType->value]
+                $this->characterData->race->movement->{$movementType->value}
             );
         }
 
@@ -339,15 +335,15 @@ class CustomYamlImporter implements ImporterInterface
     {
         static $proficiencyList = null;
 
-        return $proficiencyList ??= array_merge_recursive(
-            array_column($this->characterData->race->features, 'proficiencies'),
-            $this->characterData->background['proficiencies'],
-            array_merge(...array_column($this->characterData->classes, 'proficiencies')),
-            array_merge(...array_column(
-                array_merge(...array_column($this->characterData->classes, 'features')),
-                'proficiencies'
-            ))
-        );
+        return $proficiencyList ??= array_column(
+            [
+                ...$this->characterData->race->features,
+                ...$this->characterData->background['features'],
+                ...array_column($this->characterData->classes, 'features'),
+            ],
+            'proficiencies',
+            'category'
+        ) + array_fill_keys(array_keys(array_column(YamlProficiencyCategory::cases(), null, 'value')), []);
     }
 
     /**

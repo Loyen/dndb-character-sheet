@@ -5,6 +5,14 @@ namespace Tests\loyen\DndbCharacterSheet\Importer\CustomYaml;
 use loyen\DndbCharacterSheet\Exception\CharacterInvalidImportException;
 use loyen\DndbCharacterSheet\Importer\CustomYaml\CustomYamlImporter;
 use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlCharacter;
+use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlClass;
+use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlFeature;
+use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlFeatureAbilityScoreImprovement;
+use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlFeatureMovementImprovement;
+use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlFeatureProficiencyImprovement;
+use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlMovement;
+use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlRace;
+use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlSource;
 use loyen\DndbCharacterSheet\Model\AbilityType;
 use loyen\DndbCharacterSheet\Model\Character;
 use loyen\DndbCharacterSheet\Model\CharacterAbility;
@@ -35,6 +43,14 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(CharacterProficiency::class)]
 #[UsesClass(Item::class)]
 #[UsesClass(SourceMaterial::class)]
+#[UsesClass(YamlClass::class)]
+#[UsesClass(YamlFeature::class)]
+#[UsesClass(YamlFeatureAbilityScoreImprovement::class)]
+#[UsesClass(YamlFeatureMovementImprovement::class)]
+#[UsesClass(YamlFeatureProficiencyImprovement::class)]
+#[UsesClass(YamlMovement::class)]
+#[UsesClass(YamlRace::class)]
+#[UsesClass(YamlSource::class)]
 final class CustomYamlImporterTest extends TestCase
 {
     public static function dataCharacters(): array
