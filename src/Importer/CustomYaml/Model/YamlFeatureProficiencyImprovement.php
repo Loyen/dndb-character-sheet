@@ -13,7 +13,7 @@ class YamlFeatureProficiencyImprovement extends YamlFeature
         public string $description,
         public YamlProficiencyCategory $category,
         /** @var string[] */
-        public array $profiencies = [],
+        public array $proficiencies = [],
         /** @var SourceMaterial[] */
         public array $sources = []
     ) {}
