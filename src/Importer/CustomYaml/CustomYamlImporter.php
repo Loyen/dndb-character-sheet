@@ -5,6 +5,7 @@ namespace loyen\DndbCharacterSheet\Importer\CustomYaml;
 use loyen\DndbCharacterSheet\Exception\CharacterInvalidImportException;
 use loyen\DndbCharacterSheet\Importer\CustomYaml\Exception\CharacterYamlDataException;
 use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlCharacter;
+use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlFeatureProficiencyImprovement;
 use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlProficiencyCategory;
 use loyen\DndbCharacterSheet\Importer\CustomYaml\Model\YamlSource;
 use loyen\DndbCharacterSheet\Importer\ImporterInterface;
@@ -277,17 +278,35 @@ class CustomYamlImporter implements ImporterInterface
     /** @return array<string, array<int, string>> */
     private function getProficiencies(): array
     {
-        static $proficiencyList = null;
-
-        return $proficiencyList ??= array_column(
-            [
-                ...$this->characterData->race->features,
-                ...$this->characterData->background['features'],
-                ...array_column($this->characterData->classes, 'features'),
-            ],
+        $proficiencyList = array_column(
+            $this->characterData->background['features'],
             'proficiencies',
             'category'
-        ) + array_fill_keys(array_keys(array_column(YamlProficiencyCategory::cases(), null, 'value')), []);
+        ) + array_fill_keys(
+            array_keys(array_column(YamlProficiencyCategory::cases(), null, 'value')),
+            []
+        );
+
+        foreach ($this->characterData->race->features as $feat) {
+            if ($feat instanceof YamlFeatureProficiencyImprovement) {
+                $proficiencyList[$feat->category->value] ??= [];
+                $proficiencyList[$feat->category->value] = array_merge(
+                    $proficiencyList[$feat->category->value],
+                    $feat->proficiencies
+                );
+            }
+        }
+
+        foreach ($this->characterData->classes as $class) {
+            foreach ($class->features as $feat) {
+                if ($feat instanceof YamlFeatureProficiencyImprovement) {
+                    $proficiencyList[$feat->category->value] ??= [];
+                    $proficiencyList[$feat->category->value] = array_merge($proficiencyList[$feat->category->value], $feat->proficiencies);
+                }
+            }
+        }
+
+        return $proficiencyList;
     }
 
     public function getProficiencyBonus(): int
