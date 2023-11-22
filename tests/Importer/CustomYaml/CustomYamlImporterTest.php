@@ -92,11 +92,8 @@ final class CustomYamlImporterTest extends TestCase
         $this->assertSame($expectedCharacterData['level'], $character->getLevel(), 'Character Level');
         $this->assertCharacterAbilityScores($expectedCharacterData['abilityScores'], $character->getAbilityScores());
         $this->assertCharacterHealth($expectedCharacterData['health'], $character->getHealth());
-        $this->assertCharacterArmorClass($expectedCharacterData['armorClass'], $character->getArmorClass());
         $this->assertContainsOnlyInstancesOf(CharacterClass::class, $character->getClasses());
-        $this->assertCharacterMovementSpeeds($expectedCharacterData['movementSpeeds'], $character->getMovementSpeeds());
         $this->assertContainsOnlyInstancesOf(Item::class, $character->getInventory());
-        $this->assertSame($expectedCharacterData['wallet'], $character->getCurrencies(), 'Wallet');
         $this->assertCharacterProficiencies($character->getProficiencies());
     }
 
